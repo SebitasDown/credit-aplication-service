@@ -22,11 +22,20 @@ public class CreditRequestController {
     private final CreateCreditRequestUseCase createCreditRequestUseCase;
     private final com.CoopCredit.credit_application_service.application.port.in.creditRequest.GetCreditRequestsUseCase getCreditRequestsUseCase;
     private final CreditRequestMapper mapper;
+    private final com.CoopCredit.credit_application_service.application.port.out.AffiliateRepository affiliateRepository;
 
     @PostMapping
     @Operation(summary = "Create a new credit request", description = "Allows an affiliate to create a new credit request. Validates the affiliate's status and applies business rules.", security = @SecurityRequirement(name = "BearerAuth"))
     public ResponseEntity<CreditRequestResponseDTO> createCreditRequest(@RequestBody CreditRequestRequestDTO dto) {
         CreditRequest domainRequest = mapper.toDomain(dto);
+
+        com.CoopCredit.credit_application_service.domain.model.Affiliates affiliate = affiliateRepository
+                .findById(dto.getAffiliateId())
+                .orElseThrow(
+                        () -> new com.CoopCredit.credit_application_service.domain.exception.ResourceNotFoundException(
+                                "Affiliate not found with id: " + dto.getAffiliateId()));
+        domainRequest.setAffiliate(affiliate);
+
         CreditRequest savedRequest = createCreditRequestUseCase.createRequest(domainRequest);
         CreditRequestResponseDTO responseDTO = mapper.toResponseDTO(savedRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);

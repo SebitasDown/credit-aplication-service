@@ -1,6 +1,5 @@
 package com.CoopCredit.credit_application_service.infraestructure.out.persistence.entity;
 
-
 import com.CoopCredit.credit_application_service.domain.model.CreditRequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +18,6 @@ public class CreditRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "affiliate_id", nullable = false)
@@ -40,4 +38,14 @@ public class CreditRequestEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CreditRequestStatus status;
+
+    private int score;
+    private String riskLevel;
+    private String centralDetail;
+    private boolean quotaIncomeRatioPassed;
+    private boolean maxAmountPassed;
+    private boolean minSeniorityPassed;
+    private boolean approved;
+    private String rejectionReason;
+    private java.time.LocalDateTime evaluationDate;
 }
